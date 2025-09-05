@@ -306,7 +306,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
     """Log errors caused by Updates."""
     logger.error(f"Exception while handling an update: {context.error}")
 
-async def main() -> None:
+def main() -> None:
     """Main function to run the bot."""
     global bot_instance
     logger.info("Starting Neutron Docs Telegram Bot...")
@@ -314,10 +314,17 @@ async def main() -> None:
     # Create bot instance
     bot_instance = MCPTelegramBot()
     
-    # Connect to MCP server
-    if not await bot_instance.connect_to_mcp():
-        logger.error("Failed to connect to MCP server. Exiting.")
-        sys.exit(1)
+    # Connect to MCP server (run this synchronously)
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    try:
+        if not loop.run_until_complete(bot_instance.connect_to_mcp()):
+            logger.error("Failed to connect to MCP server. Exiting.")
+            sys.exit(1)
+    finally:
+        loop.close()
     
     # Create Telegram application
     application = Application.builder().token(bot_instance.telegram_token).build()
@@ -334,7 +341,7 @@ async def main() -> None:
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        main()
     except KeyboardInterrupt:
         logger.info("Bot stopped by user")
     except Exception as e:
