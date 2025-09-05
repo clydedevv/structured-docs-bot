@@ -96,6 +96,7 @@ class SimpleMCPBot:
                     logger.info(f"MCP response status: {response.status_code}")
                     
                     if response.status_code == 200:
+                        logger.info(f"Raw MCP response: {response.text[:200]}...")
                         response_text = response.text.strip()
                         if response_text.startswith("event: message\ndata: "):
                             # Extract JSON from SSE format
@@ -105,12 +106,14 @@ class SimpleMCPBot:
                                 logger.info("MCP response parsed from SSE successfully")
                             except Exception as json_error:
                                 logger.error(f"JSON parsing error from SSE: {json_error}")
+                                logger.error(f"Failed JSON part: {json_part[:500]}...")
                                 return "Error parsing search results"
                         else:
                             try:
                                 result = response.json()
                             except Exception as json_error:
                                 logger.error(f"JSON parsing error: {json_error}")
+                                logger.error(f"Raw response: {response.text[:500]}...")
                                 return "Error parsing search results"
                         
                         if "result" in result:
@@ -127,7 +130,7 @@ class SimpleMCPBot:
                         else:
                             return "No search results found"
                     else:
-                        logger.error(f"MCP server returned {response.status_code}")
+                        logger.error(f"MCP server returned {response.status_code}: {response.text}")
                         return "Sorry, the documentation search service is currently unavailable."
                         
         except Exception as e:
