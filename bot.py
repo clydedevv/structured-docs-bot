@@ -332,11 +332,26 @@ async def main() -> None:
     # Run the bot
     await application.run_polling(drop_pending_updates=True)
 
-if __name__ == "__main__":
+def run_bot():
+    """Run the bot with proper event loop handling."""
     try:
-        asyncio.run(main())
+        # Create a new event loop for this thread
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Run the main function
+        loop.run_until_complete(main())
     except KeyboardInterrupt:
         logger.info("Bot stopped by user")
     except Exception as e:
         logger.error(f"Fatal error: {e}")
         sys.exit(1)
+    finally:
+        # Clean up the event loop
+        try:
+            loop.close()
+        except:
+            pass
+
+if __name__ == "__main__":
+    run_bot()
