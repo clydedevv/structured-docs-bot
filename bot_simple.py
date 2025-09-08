@@ -178,6 +178,7 @@ class SimpleMCPBot:
                 "You are a Neutron documentation assistant. You must ONLY use the SearchNeutronDocumentation tool "
                 "to answer questions. Do not provide answers from your training data. Always search the documentation "
                 "first using the available tool, then provide a response based solely on the search results.\n\n"
+                "Do NOT include phrases like 'Let me search...' or 'I'll search the documentation...' - just provide the answer directly.\n\n"
                 "IMPORTANT FORMATTING RULES FOR TELEGRAM:\n"
                 "- Keep responses concise (max 2-3 paragraphs)\n"
                 "- Use *bold* for emphasis (single asterisks only)\n"
