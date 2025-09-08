@@ -33,6 +33,7 @@ class SimpleMCPBot:
         self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
         self.mcp_server_url = os.getenv('MCP_SERVER_URL', 'https://docs.neutron.org/mcp')
         self.cf_bypass_token = os.getenv('CLOUDFLARE_BYPASS_TOKEN')
+        self.claude_model = os.getenv('CLAUDE_MODEL', 'claude-3-5-sonnet-20241022')
         
         if not self.telegram_token:
             raise ValueError("TELEGRAM_TOKEN environment variable is required")
@@ -170,7 +171,7 @@ class SimpleMCPBot:
             messages = [{"role": "user", "content": user_query}]
             
             response = self.anthropic_client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=self.claude_model,
                 max_tokens=1000,
                 tools=claude_tools,
                 system=system_prompt,
@@ -203,7 +204,7 @@ class SimpleMCPBot:
                     })
                     
                     final_response = self.anthropic_client.messages.create(
-                        model="claude-3-5-sonnet-20241022",
+                        model=self.claude_model,
                         max_tokens=1000,
                         system=system_prompt,
                         messages=messages
