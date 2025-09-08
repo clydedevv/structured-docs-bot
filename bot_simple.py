@@ -227,6 +227,12 @@ class SimpleMCPBot:
                         }]
                     })
                     
+                    # Add explicit instruction for final response
+                    messages.append({
+                        "role": "user",
+                        "content": "Based on the search results above, provide a helpful answer following the formatting rules. You must provide a text response."
+                    })
+                    
                     final_response = self.anthropic_client.messages.create(
                         model=self.claude_model,
                         max_tokens=1000,
