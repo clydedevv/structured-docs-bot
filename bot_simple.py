@@ -11,8 +11,8 @@ from typing import List, Dict, Any
 
 import httpx
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import Update, InlineQueryResultArticle, InputTextMessageContent
+from telegram.ext import Application, CommandHandler, MessageHandler, InlineQueryHandler, filters, ContextTypes
 from anthropic import Anthropic
 
 # Load environment variables
@@ -287,6 +287,64 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "Sorry, I'm experiencing technical difficulties. Please try again later."
         )
 
+async def handle_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle inline queries (@botname query)."""
+    query = update.inline_query.query.strip()
+    
+    if not query:
+        # Show help text when no query
+        results = [
+            InlineQueryResultArticle(
+                id="help",
+                title="Ask about Neutron documentation",
+                description="Type your question after @neutronDocsBot",
+                input_message_content=InputTextMessageContent(
+                    message_text="Ask me about Neutron documentation! For example:\n• What is integrated architecture?\n• How do smart contracts work?\n• What are interchain queries?"
+                )
+            )
+        ]
+        await update.inline_query.answer(results, cache_time=300)
+        return
+    
+    user_id = update.effective_user.id
+    logger.info(f"Processing inline query from user {user_id}: {query}")
+    
+    try:
+        # Get response from bot
+        response = bot_instance.process_query(query)
+        
+        # Truncate for inline results
+        if len(response) > 1000:
+            response = response[:900] + "...\n\n*Ask in private chat for full details.*"
+        
+        results = [
+            InlineQueryResultArticle(
+                id="answer",
+                title=f"Answer: {query}",
+                description=response[:100] + "..." if len(response) > 100 else response,
+                input_message_content=InputTextMessageContent(
+                    message_text=response,
+                    parse_mode='Markdown'
+                )
+            )
+        ]
+        
+        await update.inline_query.answer(results, cache_time=60)
+        
+    except Exception as e:
+        logger.error(f"Error handling inline query: {e}")
+        results = [
+            InlineQueryResultArticle(
+                id="error",
+                title="Error processing query",
+                description="Please try again or ask in private chat",
+                input_message_content=InputTextMessageContent(
+                    message_text="Sorry, I couldn't process that query. Please try asking in a private chat with me."
+                )
+            )
+        ]
+        await update.inline_query.answer(results, cache_time=30)
+
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Log errors caused by Updates."""
     logger.error(f"Exception while handling an update: {context.error}")
@@ -307,6 +365,7 @@ def main():
         # Add handlers
         application.add_handler(CommandHandler("start", start_command))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        application.add_handler(InlineQueryHandler(handle_inline_query))
         application.add_error_handler(error_handler)
         
         logger.info("Bot is starting with polling...")
