@@ -184,9 +184,10 @@ class SimpleMCPBot:
                 "- Use simple bullet points with • or -\n"
                 "- No complex markdown formatting\n"
                 "- Break up long text into digestible chunks\n"
-                "- ALWAYS end with sources in this exact format:\n"
-                "  Learn more: [Page Title] | [Page Title] | [Page Title]\n"
-                "  Example: Learn more: Opinionated Blockchains | Integrated Architecture"
+                "- ALWAYS end with sources using actual clickable links from the search results:\n"
+                "  Extract both the Title and Link from each search result\n"
+                "  Format as: Learn more: [Title](URL) | [Title](URL)\n"
+                "  Example: Learn more: [Opinionated Blockchains](https://docs.neutron.org/concepts/opinionated-blockchains) | [Integrated Architecture](https://docs.neutron.org/concepts/integrated-architecture)"
             )
             
             messages = [{"role": "user", "content": user_query}]
