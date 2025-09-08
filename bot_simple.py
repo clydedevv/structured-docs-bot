@@ -32,6 +32,7 @@ class SimpleMCPBot:
         self.telegram_token = os.getenv('TELEGRAM_TOKEN')
         self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
         self.mcp_server_url = os.getenv('MCP_SERVER_URL', 'https://docs.neutron.org/mcp')
+        self.cf_bypass_token = os.getenv('CLOUDFLARE_BYPASS_TOKEN')
         
         if not self.telegram_token:
             raise ValueError("TELEGRAM_TOKEN environment variable is required")
@@ -79,10 +80,14 @@ class SimpleMCPBot:
                 headers = {
                     "Content-Type": "application/json",
                     "Accept": "application/json, text/event-stream",
-                    "User-Agent": "NeutronDocsBot/1.0",
+                    "User-Agent": "Mozilla/5.0 (compatible; NeutronDocsBot/1.0)",
                     "Origin": "https://docs.neutron.org",
                     "Referer": "https://docs.neutron.org/"
                 }
+                
+                # Add Cloudflare bypass token if available
+                if self.cf_bypass_token:
+                    headers["CF-Access-Client-Id"] = self.cf_bypass_token
                 
                 logger.info(f"Calling MCP server with query: {query}")
                 
