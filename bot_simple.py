@@ -92,7 +92,7 @@ class SimpleMCPBot:
                 
                 logger.info(f"Calling MCP server with query: {query}")
                 
-                # Use httpx synchronously
+                # Use httpx synchronously with retry logic
                 with httpx.Client() as client:
                     response = client.post(
                         self.mcp_server_url,
@@ -100,6 +100,18 @@ class SimpleMCPBot:
                         headers=headers,
                         timeout=30.0
                     )
+                    
+                    # Retry once if we get a 500 error
+                    if response.status_code == 500:
+                        logger.warning("Got 500 error, retrying in 1 second...")
+                        import time
+                        time.sleep(1)
+                        response = client.post(
+                            self.mcp_server_url,
+                            json=payload,
+                            headers=headers,
+                            timeout=30.0
+                        )
                     
                     logger.info(f"MCP response status: {response.status_code}")
                     
@@ -171,8 +183,10 @@ class SimpleMCPBot:
                 "- Use *bold* for emphasis (single asterisks)\n"
                 "- Use simple bullet points with • or -\n"
                 "- No complex markdown formatting\n"
-                "- Include relevant documentation links when available\n"
-                "- Break up long text into digestible chunks"
+                "- Break up long text into digestible chunks\n"
+                "- ALWAYS end with sources in this exact format:\n"
+                "  Learn more: [Page Title] | [Page Title] | [Page Title]\n"
+                "  Example: Learn more: Opinionated Blockchains | Integrated Architecture"
             )
             
             messages = [{"role": "user", "content": user_query}]
