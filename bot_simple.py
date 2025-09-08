@@ -79,7 +79,9 @@ class SimpleMCPBot:
                 headers = {
                     "Content-Type": "application/json",
                     "Accept": "application/json, text/event-stream",
-                    "User-Agent": "NeutronDocsBot/1.0"
+                    "User-Agent": "NeutronDocsBot/1.0",
+                    "Origin": "https://docs.neutron.org",
+                    "Referer": "https://docs.neutron.org/"
                 }
                 
                 logger.info(f"Calling MCP server with query: {query}")
@@ -130,8 +132,14 @@ class SimpleMCPBot:
                         else:
                             return "No search results found"
                     else:
-                        logger.error(f"MCP server returned {response.status_code}: {response.text}")
-                        return "Sorry, the documentation search service is currently unavailable."
+                        logger.error(f"MCP server returned {response.status_code}")
+                        logger.error(f"Response headers: {dict(response.headers)}")
+                        logger.error(f"Response body: {response.text[:1000]}")
+                        
+                        if response.status_code == 403:
+                            return "Access to documentation search is restricted. The MCP server is blocking our requests."
+                        else:
+                            return "Sorry, the documentation search service is currently unavailable."
                         
         except Exception as e:
             logger.error(f"Error calling MCP tool {tool_name}: {e}")
