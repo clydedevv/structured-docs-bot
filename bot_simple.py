@@ -33,7 +33,7 @@ class SimpleMCPBot:
         self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
         self.mcp_server_url = os.getenv('MCP_SERVER_URL', 'https://docs.neutron.org/mcp')
         self.cf_bypass_token = os.getenv('CLOUDFLARE_BYPASS_TOKEN')
-        self.claude_model = os.getenv('CLAUDE_MODEL', 'claude-3-5-sonnet-20241022')
+        self.claude_model = os.getenv('CLAUDE_MODEL', 'claude-sonnet-4-20250514')
         
         if not self.telegram_token:
             raise ValueError("TELEGRAM_TOKEN environment variable is required")
