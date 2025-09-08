@@ -165,7 +165,14 @@ class SimpleMCPBot:
             system_prompt = (
                 "You are a Neutron documentation assistant. You must ONLY use the SearchNeutronDocumentation tool "
                 "to answer questions. Do not provide answers from your training data. Always search the documentation "
-                "first using the available tool, then provide a response based solely on the search results."
+                "first using the available tool, then provide a response based solely on the search results.\n\n"
+                "IMPORTANT FORMATTING RULES:\n"
+                "- Keep responses concise (max 2-3 paragraphs)\n"
+                "- Use *bold* for emphasis (single asterisks)\n"
+                "- Use simple bullet points with • or -\n"
+                "- No complex markdown formatting\n"
+                "- Include relevant documentation links when available\n"
+                "- Break up long text into digestible chunks"
             )
             
             messages = [{"role": "user", "content": user_query}]
@@ -240,16 +247,40 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle text messages."""
-    user_query = update.message.text
+    message = update.message
+    user_query = message.text
     user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    chat_type = update.effective_chat.type
     
-    logger.info(f"Processing query from user {user_id}: {user_query}")
+    # In group chats, only respond if bot is mentioned or replied to
+    if chat_type in ['group', 'supergroup']:
+        bot_username = context.bot.username
+        is_mentioned = f"@{bot_username}" in user_query if bot_username else False
+        is_reply_to_bot = (
+            message.reply_to_message and 
+            message.reply_to_message.from_user.id == context.bot.id
+        )
+        
+        if not (is_mentioned or is_reply_to_bot):
+            return  # Don't respond in groups unless mentioned or replied to
+        
+        # Remove bot mention from query
+        if is_mentioned and bot_username:
+            user_query = user_query.replace(f"@{bot_username}", "").strip()
     
-    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+    logger.info(f"Processing query from user {user_id} in {chat_type}: {user_query}")
+    
+    await context.bot.send_chat_action(chat_id=chat_id, action="typing")
     
     try:
         response = bot_instance.process_query(user_query)
-        await update.message.reply_text(response)
+        
+        # Truncate very long responses for Telegram
+        if len(response) > 4000:
+            response = response[:3900] + "...\n\n*Response truncated. Ask a more specific question for details.*"
+        
+        await update.message.reply_text(response, parse_mode='Markdown')
     except Exception as e:
         logger.error(f"Error handling message: {e}")
         await update.message.reply_text(
