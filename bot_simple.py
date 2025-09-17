@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple Neutron Docs Telegram Bot - No async conflicts
+Simple Structured Money Docs Telegram Bot - No async conflicts
 """
 
 import json
@@ -25,13 +25,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class SimpleMCPBot:
-    """Simple bot class without complex async handling."""
+class StructuredMoneyMCPBot:
+    """Simple bot class for Structured Money documentation without complex async handling."""
     
     def __init__(self):
         self.telegram_token = os.getenv('TELEGRAM_TOKEN')
         self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-        self.mcp_server_url = os.getenv('MCP_SERVER_URL', 'https://docs.neutron.org/mcp')
+        self.mcp_server_url = os.getenv('MCP_SERVER_URL', 'https://docs.structured.money/mcp')
         self.cf_bypass_token = os.getenv('CLOUDFLARE_BYPASS_TOKEN')
         self.claude_model = os.getenv('CLAUDE_MODEL', 'claude-sonnet-4-20250514')
         
@@ -42,16 +42,16 @@ class SimpleMCPBot:
         
         self.anthropic_client = Anthropic(api_key=self.anthropic_api_key)
         
-        # Set up the SearchNeutronDocumentation tool
+        # Set up the SearchStructuredMoneyDocumentation tool
         self.mcp_tools = [{
-            "name": "SearchNeutronDocumentation",
-            "description": "Search across the Neutron Documentation knowledge base to find relevant information, code examples, API references, and guides.",
+            "name": "SearchStructuredMoneyDocumentation",
+            "description": "Search across the Structured Money Documentation knowledge base to find relevant information, code examples, API references, and guides.",
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Search query for Neutron documentation"
+                        "description": "Search query for Structured Money documentation"
                     }
                 },
                 "required": ["query"]
@@ -63,7 +63,7 @@ class SimpleMCPBot:
     def call_mcp_tool(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Call an MCP tool and return the result - synchronous version."""
         try:
-            if tool_name == "SearchNeutronDocumentation":
+            if tool_name == "SearchStructuredMoneyDocumentation":
                 query = arguments.get("query", "")
                 
                 payload = {
@@ -71,7 +71,7 @@ class SimpleMCPBot:
                     "id": 1,
                     "method": "tools/call",
                     "params": {
-                        "name": "SearchNeutronDocumentation",
+                        "name": "SearchStructuredMoneyDocumentation",
                         "arguments": {
                             "query": query
                         }
@@ -81,9 +81,9 @@ class SimpleMCPBot:
                 headers = {
                     "Content-Type": "application/json",
                     "Accept": "application/json, text/event-stream",
-                    "User-Agent": "Mozilla/5.0 (compatible; NeutronDocsBot/1.0)",
-                    "Origin": "https://docs.neutron.org",
-                    "Referer": "https://docs.neutron.org/"
+                    "User-Agent": "Mozilla/5.0 (compatible; StructuredMoneyDocsBot/1.0)",
+                    "Origin": "https://docs.structured.money",
+                    "Referer": "https://docs.structured.money/"
                 }
                 
                 # Add Cloudflare bypass token if available
@@ -175,7 +175,7 @@ class SimpleMCPBot:
                 })
             
             system_prompt = (
-                "You are a Neutron documentation assistant. You must ONLY use the SearchNeutronDocumentation tool "
+                "You are a Structured Money documentation assistant. You must ONLY use the SearchStructuredMoneyDocumentation tool "
                 "to answer questions. Do not provide answers from your training data. Always search the documentation "
                 "first using the available tool, then provide a response based solely on the search results.\n\n"
                 "Do NOT include phrases like 'Let me search...' or 'I'll search the documentation...' - just provide the answer directly.\n\n"
@@ -190,7 +190,7 @@ class SimpleMCPBot:
                 "- ALWAYS end with sources using actual clickable links from the search results:\n"
                 "  Extract both the Title and Link from each search result\n"
                 "  Format as: Learn more: [Title](URL) | [Title](URL)\n"
-                "  Example: Learn more: [Opinionated Blockchains](https://docs.neutron.org/concepts/opinionated-blockchains) | [Integrated Architecture](https://docs.neutron.org/concepts/integrated-architecture)"
+                "  Example: Learn more: [Protocol Overview](https://docs.structured.money/protocol/overview) | [Getting Started](https://docs.structured.money/getting-started)"
             )
             
             messages = [{"role": "user", "content": user_query}]
@@ -262,14 +262,14 @@ bot_instance = None
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
     welcome_message = (
-        "🚀 Welcome to Neutron Docs Bot!\n\n"
-        "I can help you find information from the official Neutron documentation.\n\n"
+        "🚀 Welcome to Structured Money Docs Bot!\n\n"
+        "I can help you find information from the official Structured Money documentation.\n\n"
         "Ask me about:\n"
-        "• Smart contracts and CosmWasm\n"
-        "• IBC and interchain features\n"
-        "• Validators and staking\n"
+        "• Protocol architecture and features\n"
+        "• Smart contracts and development\n"
         "• API references and guides\n"
-        "• Any other Neutron topics!\n\n"
+        "• Integration and implementation\n"
+        "• Any other Structured Money topics!\n\n"
         "Just ask your question in natural language and I'll search the docs for you."
     )
     await update.message.reply_text(welcome_message)
@@ -325,10 +325,10 @@ async def handle_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE
         results = [
             InlineQueryResultArticle(
                 id="help",
-                title="Ask about Neutron documentation",
-                description="Type your question after @neutronDocsBot",
+                title="Ask about Structured Money documentation",
+                description="Type your question after @structuredMoneyDocsBot",
                 input_message_content=InputTextMessageContent(
-                    message_text="Ask me about Neutron documentation! For example:\n• What is integrated architecture?\n• How do smart contracts work?\n• What are interchain queries?"
+                    message_text="Ask me about Structured Money documentation! For example:\n• What is the protocol architecture?\n• How do smart contracts work?\n• What are the API endpoints?"
                 )
             )
         ]
@@ -382,11 +382,11 @@ def main():
     """Main function - completely synchronous."""
     global bot_instance
     
-    logger.info("Starting Simple Neutron Docs Telegram Bot...")
+    logger.info("Starting Simple Structured Money Docs Telegram Bot...")
     
     try:
         # Create bot instance
-        bot_instance = SimpleMCPBot()
+        bot_instance = StructuredMoneyMCPBot()
         
         # Create and run Telegram application
         application = Application.builder().token(bot_instance.telegram_token).build()

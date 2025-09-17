@@ -1,12 +1,12 @@
-# Neutron Docs Telegram Bot
+# Structured Money Docs Telegram Bot
 
-A Telegram bot that provides access to Neutron's documentation via a hosted Model Context Protocol (MCP) server. The bot uses Anthropic's Claude LLM to process natural language queries and retrieve relevant information from the official Neutron documentation.
+A Telegram bot that provides access to Structured Money's documentation via a hosted Model Context Protocol (MCP) server. The bot uses Anthropic's Claude LLM to process natural language queries and retrieve relevant information from the official Structured Money documentation.
 
 ## Features
 
-- 🤖 Natural language queries about Neutron documentation
-- 🔍 Integration with Neutron docs via MCP server
-- 📚 Access to comprehensive Neutron knowledge base
+- 🤖 Natural language queries about Structured Money documentation
+- 🔍 Integration with Structured Money docs via MCP server
+- 📚 Access to comprehensive Structured Money knowledge base
 - ⚡ Powered by Claude 3.5 Sonnet for intelligent responses
 - 🚀 Easy deployment to Heroku or other hosting platforms
 
@@ -24,7 +24,7 @@ Before setting up the bot, you'll need:
 
 ```bash
 git clone <your-repo-url>
-cd ntrn-docs-tg-bot
+cd structured-bot
 ```
 
 ### 2. Install Dependencies
@@ -44,19 +44,19 @@ Edit `.env` and add your credentials:
 ```env
 TELEGRAM_TOKEN=your_telegram_bot_token_here
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
-MCP_SERVER_URL=https://docs.neutron.org/mcp
+MCP_SERVER_URL=https://docs.structured.money/mcp
 ```
 
 ### 4. Run Locally
 
 ```bash
-python bot.py
+python bot_simple.py
 ```
 
 The bot will start polling for messages. Test it by:
 1. Finding your bot on Telegram (search for the bot name you created)
 2. Send `/start` to get the welcome message
-3. Ask questions like "How do BTC deposits work?" or "What are LST tokens?"
+3. Ask questions like "What is the protocol architecture?" or "How do smart contracts work?"
 
 ## Deployment
 
@@ -71,7 +71,7 @@ The bot will start polling for messages. Test it by:
    ```bash
    heroku config:set TELEGRAM_TOKEN=your_telegram_bot_token_here
    heroku config:set ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   heroku config:set MCP_SERVER_URL=https://docs.neutron.org/mcp
+   heroku config:set MCP_SERVER_URL=https://docs.structured.money/mcp
    ```
 
 3. **Deploy**:
@@ -92,7 +92,7 @@ The bot will start polling for messages. Test it by:
 1. Connect your GitHub repository
 2. Create a new Web Service
 3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `python bot.py`
+4. Set start command: `python bot_simple.py`
 5. Add environment variables in the dashboard
 
 #### VPS/Server
@@ -104,8 +104,8 @@ The bot will start polling for messages. Test it by:
 ## Project Structure
 
 ```
-ntrn-docs-tg-bot/
-├── bot.py              # Main bot implementation
+structured-bot/
+├── bot_simple.py       # Main bot implementation
 ├── requirements.txt    # Python dependencies
 ├── env.example        # Environment variables template
 ├── .env               # Your actual environment variables (git-ignored)
@@ -118,7 +118,7 @@ ntrn-docs-tg-bot/
 
 1. **User Interaction**: Users send messages to the Telegram bot
 2. **Query Processing**: The query is sent to Claude 3.5 Sonnet with available MCP tools
-3. **Documentation Search**: Claude calls the SearchNeutronDocumentation tool via MCP to find relevant information
+3. **Documentation Search**: Claude calls the SearchStructuredMoneyDocumentation tool via MCP to find relevant information
 4. **Response**: The bot sends back Claude's response with relevant documentation, code examples, and direct links
 
 ## Environment Variables
@@ -127,7 +127,7 @@ ntrn-docs-tg-bot/
 |----------|-------------|----------|
 | `TELEGRAM_TOKEN` | Bot token from @BotFather | Yes |
 | `ANTHROPIC_API_KEY` | Your Anthropic API key | Yes |
-| `MCP_SERVER_URL` | MCP server URL (default: https://docs.neutron.org/mcp) | No |
+| `MCP_SERVER_URL` | MCP server URL (default: https://docs.structured.money/mcp) | No |
 
 ## Commands
 
@@ -137,12 +137,12 @@ ntrn-docs-tg-bot/
 ## Example Queries
 
 Try asking the bot:
-- "How do I deploy a smart contract on Neutron?"
-- "What is CosmWasm and how does it work with Neutron?"
-- "How do I set up IBC transfers?"
-- "What are the validator requirements?"
-- "How do I use the Neutron API?"
-- "Explain Neutron's interchain features"
+- "What is the Structured Money protocol?"
+- "How do smart contracts work?"
+- "What are the API endpoints?"
+- "How do I integrate with the protocol?"
+- "What is the architecture overview?"
+- "How do I get started with development?"
 
 ## Troubleshooting
 
@@ -192,9 +192,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For issues related to:
 - **Bot functionality**: Open an issue in this repository
-- **Neutron documentation**: Visit [docs.neutron.org](https://docs.neutron.org)
-- **General support**: Check official Neutron channels
+- **Structured Money documentation**: Visit [docs.structured.money](https://docs.structured.money)
+- **General support**: Check official Structured Money channels
 
 ---
 
-**Note**: This is an MVP implementation for general Neutron documentation access. Future versions may include multi-turn conversations, enhanced error handling, and additional features.
+**Note**: This is an MVP implementation for general Structured Money documentation access. Future versions may include multi-turn conversations, enhanced error handling, and additional features.
