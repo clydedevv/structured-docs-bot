@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple Structured Money Docs Telegram Bot - No async conflicts
+Simple maxBTC Docs Telegram Bot - No async conflicts
 """
 
 import json
@@ -25,8 +25,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class StructuredMoneyMCPBot:
-    """Simple bot class for Structured Money documentation without complex async handling."""
+class MaxBtcMCPBot:
+    """Simple bot class for maxBTC documentation without complex async handling."""
     
     def __init__(self):
         self.telegram_token = os.getenv('TELEGRAM_TOKEN')
@@ -42,16 +42,16 @@ class StructuredMoneyMCPBot:
         
         self.anthropic_client = Anthropic(api_key=self.anthropic_api_key)
         
-        # Set up the SearchStructuredMoneyDocumentation tool
+        # Set up the SearchMaxBtcDocumentation tool
         self.mcp_tools = [{
-            "name": "SearchStructuredMoneyDocumentation",
-            "description": "Search across the Structured Money Documentation knowledge base to find relevant information, code examples, API references, and guides.",
+            "name": "SearchMaxBtcDocumentation",
+            "description": "Search across the maxBTC Documentation knowledge base to find relevant information, code examples, API references, and guides.",
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Search query for Structured Money documentation"
+                        "description": "Search query for maxBTC documentation"
                     }
                 },
                 "required": ["query"]
@@ -63,7 +63,7 @@ class StructuredMoneyMCPBot:
     def call_mcp_tool(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Call an MCP tool and return the result - synchronous version."""
         try:
-            if tool_name == "SearchStructuredMoneyDocumentation":
+            if tool_name == "SearchMaxBtcDocumentation":
                 query = arguments.get("query", "")
                 
                 payload = {
@@ -71,7 +71,7 @@ class StructuredMoneyMCPBot:
                     "id": 1,
                     "method": "tools/call",
                     "params": {
-                        "name": "SearchStructuredMoneyDocumentation",
+                        "name": "SearchMaxBtcDocumentation",
                         "arguments": {
                             "query": query
                         }
@@ -175,7 +175,7 @@ class StructuredMoneyMCPBot:
                 })
             
             system_prompt = (
-                "You are a Structured Money documentation assistant. You must ONLY use the SearchStructuredMoneyDocumentation tool "
+                "You are a maxBTC documentation assistant. You must ONLY use the SearchMaxBtcDocumentation tool "
                 "to answer questions. Do not provide answers from your training data. Always search the documentation "
                 "first using the available tool, then provide a response based solely on the search results.\n\n"
                 "Do NOT include phrases like 'Let me search...' or 'I'll search the documentation...' - just provide the answer directly.\n\n"
@@ -262,14 +262,14 @@ bot_instance = None
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
     welcome_message = (
-        "🚀 Welcome to Structured Money Docs Bot!\n\n"
-        "I can help you find information from the official Structured Money documentation.\n\n"
+        "🚀 Welcome to maxBTC Docs Bot!\n\n"
+        "I can help you find information from the official maxBTC documentation.\n\n"
         "Ask me about:\n"
-        "• Protocol architecture and features\n"
+        "• maxBTC protocol and features\n"
         "• Smart contracts and development\n"
         "• API references and guides\n"
         "• Integration and implementation\n"
-        "• Any other Structured Money topics!\n\n"
+        "• Any other maxBTC topics!\n\n"
         "Just ask your question in natural language and I'll search the docs for you."
     )
     await update.message.reply_text(welcome_message)
@@ -325,10 +325,10 @@ async def handle_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE
         results = [
             InlineQueryResultArticle(
                 id="help",
-                title="Ask about Structured Money documentation",
-                description="Type your question after @structuredMoneyDocsBot",
+                title="Ask about maxBTC documentation",
+                description="Type your question after @maxBtcDocsBot",
                 input_message_content=InputTextMessageContent(
-                    message_text="Ask me about Structured Money documentation! For example:\n• What is the protocol architecture?\n• How do smart contracts work?\n• What are the API endpoints?"
+                    message_text="Ask me about maxBTC documentation! For example:\n• What is maxBTC?\n• How does the protocol work?\n• What are the API endpoints?"
                 )
             )
         ]
@@ -382,11 +382,11 @@ def main():
     """Main function - completely synchronous."""
     global bot_instance
     
-    logger.info("Starting Simple Structured Money Docs Telegram Bot...")
+    logger.info("Starting Simple maxBTC Docs Telegram Bot...")
     
     try:
         # Create bot instance
-        bot_instance = StructuredMoneyMCPBot()
+        bot_instance = MaxBtcMCPBot()
         
         # Create and run Telegram application
         application = Application.builder().token(bot_instance.telegram_token).build()
